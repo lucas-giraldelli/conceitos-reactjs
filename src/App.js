@@ -6,13 +6,10 @@ import "./styles.css";
 function App() {
   const [ repositories, setRepositories ] = useState([]);
 
-  async function listAll() {
-    const repo = await api.get("/repositories", {});
-    setRepositories(repo.data);
-  }
-
   useEffect(() => {
-    listAll();
+    api.get('/repositories').then(response => {
+      setRepositories(response.data);
+    })
   }, []);
 
   async function handleAddRepository() {
@@ -27,12 +24,12 @@ function App() {
 
   async function handleRemoveRepository(id) {
     await api.delete(`/repositories/${id}`);
-    const idx = repositories.findIndex((item) => item.id === id);
-
-    if (idx > -1) {
-      repositories.splice(idx, 1);
-      setRepositories([...repositories]);
-    }
+     
+    const newRepository = repositories.filter(
+      repository => repository.id !== id
+    );
+    
+    setRepositories(newRepository);    
   }
 
   return (
